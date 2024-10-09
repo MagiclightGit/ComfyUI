@@ -396,7 +396,7 @@ class ModelPatcher:
             m.comfy_patched_weights = True
 
         for x in load_completely:
-            x[2].to(device_to)
+            x[2].to(device_to, non_blocking=True)
 
         if lowvram_counter > 0:
             logging.info("loaded partially {} {} {}".format(lowvram_model_memory / (1024 * 1024), mem_counter / (1024 * 1024), patch_counter))
@@ -405,7 +405,7 @@ class ModelPatcher:
             logging.info("loaded completely {} {} {}".format(lowvram_model_memory / (1024 * 1024), mem_counter / (1024 * 1024), full_load))
             self.model.model_lowvram = False
             if full_load:
-                self.model.to(device_to)
+                self.model.to(device_to, non_blocking=True)
                 mem_counter = self.model_size()
 
         self.model.lowvram_patch_counter += patch_counter
@@ -448,7 +448,7 @@ class ModelPatcher:
             self.backup.clear()
 
             if device_to is not None:
-                self.model.to(device_to)
+                self.model.to(device_to, non_blocking=True)
                 self.model.device = device_to
             self.model.model_loaded_weight_memory = 0
 
