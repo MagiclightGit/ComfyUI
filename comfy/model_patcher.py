@@ -23,6 +23,7 @@ import logging
 import uuid
 import collections
 import math
+import time
 
 import comfy.utils
 import comfy.float
@@ -424,7 +425,10 @@ class ModelPatcher:
             full_load = False
 
         if load_weights:
+            t0 = time.time()
             self.load(device_to, lowvram_model_memory=lowvram_model_memory, force_patch_weights=force_patch_weights, full_load=full_load)
+            t1 = time.time()
+            logging.info("patch_model={}, to_device={}, load_time={} s".format(self.model.__class__.__name__, device_to, t1 - t0))
         return self.model
 
     def unpatch_model(self, device_to=None, unpatch_weights=True):
@@ -448,7 +452,10 @@ class ModelPatcher:
             self.backup.clear()
 
             if device_to is not None:
+                t0 = time.time()
                 self.model.to(device_to, non_blocking=True)
+                t1 = time.time()
+                logging.info("unpatch_model={}, to_device={}, offload_time={} s".format(self.model.__class__.__name__, device_to, t1 - t0))
                 self.model.device = device_to
             self.model.model_loaded_weight_memory = 0
 
